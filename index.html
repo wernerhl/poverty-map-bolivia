@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolivia Poverty & Nutrition Map 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --surface2:#1e2430;
+  --border:  #21262d;
+  --text:    #c9d1d9;
+  --muted:   #6e7681;
+  --accent:  #58a6ff;
+  --red:     #f85149;
+  --orange:  #e3b341;
+  --green:   #3fb950;
+  --purple:  #bc8cff;
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'IBM Plex Sans', sans-serif;
+}
+* { box-sizing: border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:13px; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+/* ── Header ── */
+header {
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-shrink:0;
+  z-index:1000;
+}
+.logo { font-family:var(--mono); font-size:11px; font-weight:500; color:var(--accent); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+.logo span { color:var(--muted); font-weight:300; }
+
+/* Indicator selector tabs */
+.indicator-tabs { display:flex; gap:4px; flex-wrap:wrap; }
+.tab-btn {
+  padding:5px 13px;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:2px;
+  color:var(--muted);
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.06em;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.tab-btn:hover { border-color:var(--accent); color:var(--text); }
+.tab-btn.active { background:var(--accent); border-color:var(--accent); color:#0d1117; font-weight:500; }
+
+.header-right { margin-left:auto; display:flex; align-items:center; gap:14px; }
+.meta-pill { font-family:var(--mono); font-size:10px; color:var(--muted); white-space:nowrap; }
+
+/* ── Layout ── */
+.main-layout { display:flex; flex:1; overflow:hidden; }
+
+/* ── Map ── */
+#map { flex:1; min-width:0; }
+
+/* ── Right panel ── */
+.right-panel {
+  width:340px;
+  min-width:340px;
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* ── Legend ── */
+.legend-block {
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+}
+.legend-title { font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.legend-bar { width:100%; height:12px; border-radius:2px; margin-bottom:6px; }
+.legend-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:9.5px; color:var(--muted); }
+
+/* ── Info card ── */
+.info-card {
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  min-height:120px;
+}
+.info-muni { font-size:15px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.info-dept { font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom:12px; }
+.info-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.stat-box { background:var(--surface2); border-radius:3px; padding:8px 10px; }
+.stat-val { font-family:var(--mono); font-size:17px; font-weight:500; }
+.stat-lbl { font-size:10px; color:var(--muted); margin-top:2px; }
+.stat-ci  { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:1px; }
+.placeholder-text { color:var(--muted); font-size:12px; padding-top:8px; line-height:1.6; }
+
+/* ── Charts ── */
+.charts-area { flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:16px; }
+.chart-block {}
+.chart-title { font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.chart-wrap { position:relative; height:180px; }
+.chart-wrap-sm { position:relative; height:130px; }
+
+/* ── Bottom bar ── */
+.bottom-bar {
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:7px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-shrink:0;
+  flex-wrap:wrap;
+}
+.bottom-stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.bottom-stat .val { font-family:var(--mono); font-size:13px; font-weight:500; color:var(--text); }
+.bottom-stat .lbl { font-family:var(--mono); font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; }
+.bottom-sep { width:1px; height:28px; background:var(--border); }
+.bottom-note { font-size:11px; color:var(--muted); margin-left:auto; font-family:var(--mono); }
+
+/* Scrollbar */
+.charts-area::-webkit-scrollbar { width:4px; }
+.charts-area::-webkit-scrollbar-track { background:var(--surface); }
+.charts-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Tooltip */
+.leaflet-tooltip {
+  background:var(--surface2) !important;
+  border:1px solid var(--border) !important;
+  color:var(--text) !important;
+  font-family:var(--mono) !important;
+  font-size:11px !important;
+  padding:6px 10px !important;
+  border-radius:2px !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.4) !important;
+}
+.leaflet-tooltip-top:before { border-top-color: var(--border) !important; }
+.tt-name { font-weight:500; font-size:12px; margin-bottom:3px; }
+.tt-val  { font-size:13px; font-weight:500; margin-bottom:1px; }
+.tt-dept { color:var(--muted); font-size:10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Bolivia <span>·</span> Poverty & Nutrition <span>·</span> 2024</div>
+
+  <div class="indicator-tabs" id="indicatorTabs">
+    <button class="tab-btn active" data-ind="poverty">Poverty</button>
+    <button class="tab-btn" data-ind="extreme_poverty">Extreme Poverty</button>
+    <button class="tab-btn" data-ind="poverty_gap">Poverty Gap</button>
+    <button class="tab-btn" data-ind="gini">Gini</button>
+    <button class="tab-btn" data-ind="stunting">Stunting</button>
+    <button class="tab-btn" data-ind="wasting">Wasting</button>
+    <button class="tab-btn" data-ind="anemia">Anemia</button>
+  </div>
+
+  <div class="header-right">
+    <span class="meta-pill">339 municipalities · Census 2024 · DRF + BYM2 + OT</span>
+  </div>
+</header>
+
+<div class="main-layout">
+  <div id="map"></div>
+
+  <div class="right-panel">
+    <!-- Legend -->
+    <div class="legend-block">
+      <div class="legend-title" id="legendTitle">Poverty Headcount Rate</div>
+      <canvas class="legend-bar" id="legendBar" height="12"></canvas>
+      <div class="legend-labels" id="legendLabels"></div>
+    </div>
+
+    <!-- Info card -->
+    <div class="info-card" id="infoCard">
+      <div class="placeholder-text">Click any municipality to see detailed statistics.</div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-area">
+      <div class="chart-block">
+        <div class="chart-title">Department Ranking — Selected Indicator</div>
+        <div class="chart-wrap"><canvas id="deptChart"></canvas></div>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">Poverty vs. Stunting</div>
+        <div class="chart-wrap-sm"><canvas id="scatterChart"></canvas></div>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">Distribution of Municipalities</div>
+        <div class="chart-wrap-sm"><canvas id="histChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-stat"><span class="val" id="bn">—</span><span class="lbl">Municipalities</span></div>
+  <div class="bottom-sep"></div>
+  <div class="bottom-stat"><span class="val" id="bpov">—</span><span class="lbl">Avg Poverty</span></div>
+  <div class="bottom-sep"></div>
+  <div class="bottom-stat"><span class="val" id="bext">—</span><span class="lbl">Avg Extreme</span></div>
+  <div class="bottom-sep"></div>
+  <div class="bottom-stat"><span class="val" id="bstunt">—</span><span class="lbl">Avg Stunting</span></div>
+  <div class="bottom-sep"></div>
+  <div class="bottom-stat"><span class="val" id="bgini">—</span><span class="lbl">Avg Gini</span></div>
+  <div class="bottom-note">SAE: Distributional Random Forest + BYM2 Spatial Smoothing + Optimal Transport · wernerhl.github.io</div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const INDICATORS = {
+  poverty:         { label:'Poverty Headcount',   fmt: pct,  palette:'red',    min:0.15, max:0.65 },
+  extreme_poverty: { label:'Extreme Poverty',      fmt: pct,  palette:'orange', min:0.00, max:0.50 },
+  poverty_gap:     { label:'Poverty Gap (FGT1)',   fmt: pct,  palette:'red',    min:0.04, max:0.40 },
+  gini:            { label:'Gini Coefficient',     fmt: dec2, palette:'purple', min:0.35, max:0.58 },
+  stunting:        { label:'Child Stunting (<5y)', fmt: pct,  palette:'teal',   min:0.00, max:0.22 },
+  wasting:         { label:'Child Wasting (<5y)',  fmt: pct,  palette:'orange', min:0.00, max:0.07 },
+  anemia:          { label:'Child Anemia (<5y)',   fmt: pct,  palette:'purple', min:0.05, max:0.30 },
+};
+
+const PALETTES = {
+  red:    ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#99000d'],
+  orange: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
+  purple: ['#f2f0f7','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d'],
+  teal:   ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#005824'],
+};
+
+function pct(v)  { return v != null ? (v*100).toFixed(1)+'%' : '—'; }
+function dec2(v) { return v != null ? v.toFixed(3) : '—'; }
+function raw(v)  { return v != null ? v : null; }
+
+let currentInd = 'poverty';
+let geojsonLayer, allFeatures = [], selectedLayer = null;
+let deptChart, scatterChart, histChart;
+
+// ── Map init ────────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl:true, attributionControl:false })
+             .setView([-17, -65], 6);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  maxZoom:18, opacity:0.5
+}).addTo(map);
+
+// ── Color scale ─────────────────────────────────────────────────────────────
+function getColor(val, ind) {
+  if (val == null || isNaN(val)) return '#2a2a3a';
+  const cfg = INDICATORS[ind];
+  const pal = PALETTES[cfg.palette];
+  const t = Math.max(0, Math.min(1, (val - cfg.min) / (cfg.max - cfg.min)));
+  const i = Math.min(pal.length-1, Math.floor(t * pal.length));
+  return pal[i];
+}
+
+function styleFeature(f) {
+  const v = f.properties[currentInd];
+  return {
+    fillColor: getColor(v, currentInd),
+    fillOpacity: v != null ? 0.82 : 0.2,
+    color: '#0d1117', weight: 0.5, opacity: 0.7
+  };
+}
+
+// ── Tooltip ─────────────────────────────────────────────────────────────────
+function tooltipContent(p) {
+  const cfg = INDICATORS[currentInd];
+  const v = p[currentInd];
+  return `<div class="tt-name">${p.muni_name || '—'}</div>
+          <div class="tt-val">${cfg.fmt(v)}</div>
+          <div class="tt-dept">${p.department || ''} · ${cfg.label}</div>`;
+}
+
+// ── Info card ────────────────────────────────────────────────────────────────
+function showInfo(p) {
+  const ci = (p.ci_low != null && p.ci_high != null)
+    ? `90% CI: [${pct(p.ci_low)}, ${pct(p.ci_high)}]` : '';
+  document.getElementById('infoCard').innerHTML = `
+    <div class="info-muni">${p.muni_name || p.gadm_name || '—'}</div>
+    <div class="info-dept">${p.department || ''} · ${(p.n_hh||0).toLocaleString()} census households</div>
+    <div class="info-stats">
+      <div class="stat-box">
+        <div class="stat-val" style="color:#f85149">${pct(p.poverty)}</div>
+        <div class="stat-lbl">Poverty rate</div>
+        <div class="stat-ci">${ci}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:#e3b341">${pct(p.extreme_poverty)}</div>
+        <div class="stat-lbl">Extreme poverty</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:#bc8cff">${dec2(p.gini)}</div>
+        <div class="stat-lbl">Gini coefficient</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:#3fb950">${pct(p.stunting)}</div>
+        <div class="stat-lbl">Child stunting</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:#58a6ff">${pct(p.anemia)}</div>
+        <div class="stat-lbl">Child anemia</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:#ffa657">${pct(p.poverty_gap)}</div>
+        <div class="stat-lbl">Poverty gap</div>
+      </div>
+    </div>`;
+}
+
+// ── GeoJSON load ─────────────────────────────────────────────────────────────
+fetch('bolivia_poverty_map.geojson')
+  .then(r => r.json())
+  .then(data => {
+    allFeatures = data.features.filter(f => f.properties.poverty != null);
+
+    geojsonLayer = L.geoJSON(data, {
+      style: styleFeature,
+      onEachFeature(feature, layer) {
+        layer.bindTooltip(() => tooltipContent(feature.properties),
+          { sticky:true, offset:[10,0] });
+
+        layer.on({
+          click(e) {
+            if (selectedLayer) selectedLayer.setStyle(styleFeature(selectedLayer.feature));
+            selectedLayer = layer;
+            layer.setStyle({ weight:2, color:'#58a6ff', fillOpacity:0.9 });
+            layer.bringToFront();
+            showInfo(feature.properties);
+          },
+          mouseover(e) { if(layer !== selectedLayer) layer.setStyle({fillOpacity:1}); },
+          mouseout(e)  { if(layer !== selectedLayer) layer.setStyle(styleFeature(feature)); }
+        });
+      }
+    }).addTo(map);
+
+    updateLegend();
+    renderCharts();
+    updateBottomBar();
+  });
+
+// ── Legend ───────────────────────────────────────────────────────────────────
+function updateLegend() {
+  const cfg = INDICATORS[currentInd];
+  const pal = PALETTES[cfg.palette];
+  document.getElementById('legendTitle').textContent = cfg.label;
+
+  const canvas = document.getElementById('legendBar');
+  canvas.width = canvas.offsetWidth || 300;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,canvas.width,0);
+  pal.forEach((c,i) => grad.addColorStop(i/(pal.length-1), c));
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,12);
+
+  const lo = cfg.min, hi = cfg.max;
+  const mid = (lo+hi)/2;
+  const fmt = cfg.fmt;
+  document.getElementById('legendLabels').innerHTML =
+    `<span>${fmt(lo)}</span><span>${fmt(mid)}</span><span>${fmt(hi)}</span>`;
+}
+
+// ── Charts ───────────────────────────────────────────────────────────────────
+function renderCharts() {
+  renderDeptChart();
+  renderScatter();
+  renderHist();
+}
+
+const CHART_OPTS = {
+  plugins:{ legend:{display:false} },
+  scales:{
+    x:{ ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono', size:9} }, grid:{color:'#21262d'} },
+    y:{ ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono', size:9} }, grid:{color:'#21262d'} }
+  },
+  animation:{ duration:300 }
+};
+
+function deptAverages(ind) {
+  const byDept = {};
+  allFeatures.forEach(f => {
+    const p = f.properties;
+    const d = p.department;
+    const v = p[ind];
+    if (!d || v == null) return;
+    if (!byDept[d]) byDept[d] = [];
+    byDept[d].push(v);
+  });
+  return Object.entries(byDept)
+    .map(([d, vals]) => ({ dept:d, avg: vals.reduce((a,b)=>a+b,0)/vals.length }))
+    .sort((a,b) => b.avg - a.avg);
+}
+
+function renderDeptChart() {
+  const ctx = document.getElementById('deptChart').getContext('2d');
+  const data = deptAverages(currentInd);
+  const cfg = INDICATORS[currentInd];
+  const pal = PALETTES[cfg.palette];
+  const colors = data.map(d => {
+    const t = (d.avg - cfg.min)/(cfg.max - cfg.min);
+    return pal[Math.min(pal.length-1, Math.floor(t*pal.length))];
+  });
+
+  if (deptChart) deptChart.destroy();
+  deptChart = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: data.map(d => d.dept.substring(0,6)),
+      datasets:[{ data: data.map(d => d.avg), backgroundColor: colors, borderWidth:0 }]
+    },
+    options:{
+      ...CHART_OPTS,
+      indexAxis:'y',
+      plugins:{ legend:{display:false}, tooltip:{
+        callbacks:{ label: ctx => cfg.fmt(ctx.raw) },
+        backgroundColor:'#1e2430', titleColor:'#c9d1d9', bodyColor:'#c9d1d9',
+        borderColor:'#21262d', borderWidth:1
+      }},
+      scales:{
+        x:{ ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono',size:9},
+              callback: v => cfg.fmt(v) }, grid:{color:'#21262d'} },
+        y:{ ticks:{ color:'#c9d1d9', font:{family:'IBM Plex Mono',size:9} }, grid:{display:false} }
+      }
+    }
+  });
+}
+
+function renderScatter() {
+  const ctx = document.getElementById('scatterChart').getContext('2d');
+  const pts = allFeatures
+    .filter(f => f.properties.poverty != null && f.properties.stunting != null)
+    .map(f => ({
+      x: f.properties.poverty,
+      y: f.properties.stunting,
+      dept: f.properties.department
+    }));
+
+  if (scatterChart) scatterChart.destroy();
+  scatterChart = new Chart(ctx, {
+    type:'scatter',
+    data:{ datasets:[{
+      data: pts,
+      backgroundColor:'rgba(88,166,255,0.45)',
+      pointRadius:3, pointHoverRadius:5, borderWidth:0
+    }]},
+    options:{
+      ...CHART_OPTS,
+      plugins:{ legend:{display:false}, tooltip:{
+        callbacks:{ label: ctx => `${pct(ctx.raw.x)} pov · ${pct(ctx.raw.y)} stunt` },
+        backgroundColor:'#1e2430', titleColor:'#c9d1d9', bodyColor:'#c9d1d9',
+        borderColor:'#21262d', borderWidth:1
+      }},
+      scales:{
+        x:{ title:{display:true,text:'Poverty',color:'#6e7681',font:{family:'IBM Plex Mono',size:9}},
+            ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono',size:9}, callback:v=>pct(v) },
+            grid:{color:'#21262d'} },
+        y:{ title:{display:true,text:'Stunting',color:'#6e7681',font:{family:'IBM Plex Mono',size:9}},
+            ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono',size:9}, callback:v=>pct(v) },
+            grid:{color:'#21262d'} }
+      }
+    }
+  });
+}
+
+function renderHist() {
+  const ctx = document.getElementById('histChart').getContext('2d');
+  const cfg = INDICATORS[currentInd];
+  const vals = allFeatures.map(f => f.properties[currentInd]).filter(v => v != null);
+  const nbins = 15;
+  const lo = cfg.min, hi = cfg.max;
+  const step = (hi-lo)/nbins;
+  const bins = Array(nbins).fill(0);
+  vals.forEach(v => {
+    const b = Math.min(nbins-1, Math.floor((v-lo)/step));
+    if(b>=0) bins[b]++;
+  });
+  const labels = bins.map((_,i) => cfg.fmt(lo + i*step));
+  const pal = PALETTES[cfg.palette];
+  const colors = bins.map((_,i) => pal[Math.min(pal.length-1, Math.floor(i/nbins*pal.length))]);
+
+  if (histChart) histChart.destroy();
+  histChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{ data:bins, backgroundColor:colors, borderWidth:0 }]},
+    options:{
+      ...CHART_OPTS,
+      plugins:{ legend:{display:false}, tooltip:{
+        callbacks:{ label: ctx => `${ctx.raw} munis` },
+        backgroundColor:'#1e2430', titleColor:'#c9d1d9', bodyColor:'#c9d1d9',
+        borderColor:'#21262d', borderWidth:1
+      }},
+      scales:{
+        x:{ ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono',size:8}, maxRotation:45 }, grid:{display:false} },
+        y:{ ticks:{ color:'#6e7681', font:{family:'IBM Plex Mono',size:9} }, grid:{color:'#21262d'} }
+      }
+    }
+  });
+}
+
+function updateBottomBar() {
+  const vals = f => allFeatures.map(x => x.properties[f]).filter(v=>v!=null);
+  const mean = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+  document.getElementById('bn').textContent    = allFeatures.length;
+  document.getElementById('bpov').textContent  = pct(mean(vals('poverty')));
+  document.getElementById('bext').textContent  = pct(mean(vals('extreme_poverty')));
+  document.getElementById('bstunt').textContent= pct(mean(vals('stunting')));
+  document.getElementById('bgini').textContent = dec2(mean(vals('gini')));
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+document.getElementById('indicatorTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentInd = btn.dataset.ind;
+  if (geojsonLayer) geojsonLayer.setStyle(styleFeature);
+  if (selectedLayer) selectedLayer.setStyle({weight:2,color:'#58a6ff',fillOpacity:0.9});
+  updateLegend();
+  renderDeptChart();
+  renderHist();
+  // Update tooltip for selected
+  if (selectedLayer) {
+    selectedLayer.bindTooltip(() => tooltipContent(selectedLayer.feature.properties), {sticky:true});
+  }
+});
+</script>
+</body>
+</html>

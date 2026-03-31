@@ -3,7 +3,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-name: Build and Deploy Quarto Site
+name: Deploy Static Dashboard
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -24,19 +24,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-
-      - name: Render
-        uses: quarto-dev/quarto-actions/render@v2
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: .
 
       - name: Deploy to GitHub Pages
         id: deployment
