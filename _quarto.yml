@@ -4,7 +4,6 @@ project:
 
 website:
   title: "Poverty & Nutrition in Bolivia"
-  subtitle: "Small Area Estimation — 2024"
   site-url: https://wernerhl.github.io/poverty-map-bolivia/
   repo-url: https://github.com/wernerhl/poverty-map-bolivia
   navbar:
