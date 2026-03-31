@@ -1,0 +1,138 @@
+---
+title: "Methodology"
+subtitle: "Three-Layer Small Area Estimation Framework"
+---
+
+## Overview
+
+Standard small area estimation methods (e.g., Elbers, Lanjouw & Lanjouw 2003) rely on linear models and parametric assumptions that may fail to capture the complex, nonlinear relationships between household characteristics and welfare. Our approach replaces this with a three-layer framework that is distribution-free, spatially coherent, and calibrated to survey benchmarks.
+
+## The Pipeline
+
+::: {.pipeline-flow}
+::: {.pipeline-box}
+Survey + Census<br/>Harmonization
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 1: DRF<br/>Distributional RF
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 2: BYM2<br/>Spatial Smoothing
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 3: OT<br/>Calibration
+:::
+:::
+
+---
+
+## Layer 1: Distributional Random Forests (DRF)
+
+::: {.method-step}
+#### What it does
+DRF (Cevid et al., 2022) estimates the full conditional distribution of per capita household income, not just the mean. For each census household, DRF produces a set of adaptive nearest-neighbor weights from the survey, yielding a nonparametric estimate of $F(y \mid X)$.
+:::
+
+::: {.method-step}
+#### Key features
+- **2,000 trees** with honesty (separate estimation and splitting samples)
+- **43 harmonized predictors** covering demographics, education, employment, housing, and assets
+- Outputs: $\hat{P}(\text{poor} \mid X)$, $\hat{FGT}_1$, $\hat{FGT}_2$, conditional mean and variance
+- Out-of-bag CRPS and calibration diagnostics
+:::
+
+::: {.method-step}
+#### Municipal aggregation
+Area-level estimates are simple averages of household-level predictions:
+$$\hat{\theta}_a^{DRF} = \frac{1}{N_a} \sum_{i \in a} \hat{P}(\text{poor} \mid X_i)$$
+with variance estimated from the conditional variance of individual predictions.
+:::
+
+---
+
+## Layer 2: BYM2 Spatial Smoothing
+
+::: {.method-step}
+#### What it does
+The Besag-York-Molli&eacute; 2 model (Riebler et al., 2016) smooths the DRF area estimates by borrowing strength from neighboring municipalities and accounting for estimation uncertainty.
+:::
+
+::: {.method-step}
+#### Model specification
+Two competing formulations:
+
+**Gaussian Fay-Herriot** (known variance):
+$$\hat{\theta}_a \mid \theta_a \sim N(\theta_a, \hat{\psi}_a), \quad \theta_a = \mathbf{x}_a'\boldsymbol{\beta} + u_a + v_a$$
+
+**Beta BYM2** (for proportions on [0,1]):
+$$\hat{\theta}_a \sim \text{Beta}(\mu_a \phi, (1-\mu_a)\phi), \quad \text{logit}(\mu_a) = \mathbf{x}_a'\boldsymbol{\beta} + u_a + v_a$$
+
+Model selection via WAIC. Adjacency from GADM 4.1 administrative boundaries.
+:::
+
+::: {.method-step}
+#### What it adds
+- Spatial coherence: neighboring municipalities inform each other
+- Shrinkage: noisy estimates from small municipalities are stabilized
+- Posterior credible intervals with proper uncertainty quantification
+:::
+
+---
+
+## Layer 3: Optimal Transport Calibration
+
+::: {.method-step}
+#### What it does
+OT calibration (Villani, 2009) maps the DRF-predicted welfare distribution to match the survey-observed distribution at the regional level, correcting any systematic bias in the imputed distribution's shape.
+:::
+
+::: {.method-step}
+#### Implementation
+1. **Quantile mapping**: Build monotone transport map $T$ from predicted to observed quantiles on a 999-point grid
+2. **Regularization**: $T_\lambda = (1-\lambda)T + \lambda \cdot \text{Id}$, with $\lambda$ chosen by cross-validation
+3. **Regional calibration**: Separate maps for each of 18 department $\times$ area domains (minimum 30 survey HH)
+4. **Raking**: Final municipal estimates raked so department totals match OT-calibrated aggregates
+:::
+
+::: {.method-step}
+#### Final estimates
+$$\hat{\theta}_a^{final} = \hat{\theta}_a^{BYM2} \times \frac{\hat{\theta}_d^{OT}}{\hat{\theta}_d^{BYM2}}$$
+where $d$ indexes departments. This preserves within-department spatial patterns from BYM2 while ensuring consistency with calibrated regional totals.
+:::
+
+---
+
+## Uncertainty Quantification
+
+::: {.method-step}
+#### Split conformal prediction
+- 80/20 train/calibration split with re-trained DRF
+- Basic and adaptive conformity scores
+- 90% and 80% conformal prediction intervals
+- Coefficient of variation classification: High (&lt;10%), Medium (10-20%), Moderate (20-30%), Low (&gt;30%)
+:::
+
+---
+
+## Data Harmonization
+
+43 predictors harmonized across survey and census:
+
+| Domain | Variables |
+|--------|-----------|
+| **Demographics** | Head age, sex, indigenous status, mother tongue, marital status, HH size, dependency ratio |
+| **Education** | Head years of education, literacy |
+| **Employment** | Head sector (agriculture/industry/services), employment status |
+| **Housing** | Wall, roof, floor materials; water, sanitation, electricity, cooking fuel |
+| **Assets** | PCA-based asset index from 15 durable goods |
+| **Composition** | Share children, elderly, working-age; max education in HH |
+
+## References
+
+- Cevid, D., Michel, L., Meinshausen, N., & B&uuml;hlmann, P. (2022). Distributional random forests. *JRSS-B*.
+- Elbers, C., Lanjouw, J.O., & Lanjouw, P. (2003). Micro-level estimation of poverty and inequality. *Econometrica*.
+- Riebler, A., S&oslash;rbye, S.H., Simpson, D., & Rue, H. (2016). An intuitive Bayesian spatial model for disease mapping. *Statistical Methods in Medical Research*.
+- Villani, C. (2009). *Optimal Transport: Old and New*. Springer.

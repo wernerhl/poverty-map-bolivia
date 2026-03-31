@@ -1,0 +1,99 @@
+---
+title: "Nutrition Maps"
+subtitle: "Child Malnutrition Estimates at the Municipal Level, 2024"
+---
+
+## Overview
+
+Using the same three-layer SAE framework, we estimate child malnutrition prevalence for Bolivia's municipalities. The nutrition pipeline uses the National Food and Nutrition Survey (ENSDA 2023) as the survey source, with outcomes measured as z-scores relative to WHO growth standards.
+
+::: {.callout-highlight}
+**Target population**: Children aged 0-4 years (~802,717 in the 2024 Census). Survey source: ENSDA 2023 with 19,059 children and anthropometric measurements.
+:::
+
+---
+
+## Stunting (Height-for-Age < -2 SD)
+
+Chronic malnutrition — reflecting long-term nutritional deficiency, recurrent illness, or poor feeding practices.
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Stunting Prevalence by Municipality**
+
+*This map will be populated from nutrition pipeline outputs once results are uploaded.*
+:::
+:::
+
+### Key patterns
+- **National rate**: 9.7%
+- **Highest**: Potos&iacute; (17.4%), Oruro (13.1%), La Paz (11.2%)
+- **Lowest**: Santa Cruz (5.9%), Pando (6.2%)
+- Strong urban-rural gradient
+
+---
+
+## Wasting (Weight-for-Height < -2 SD)
+
+Acute malnutrition — reflecting recent or current food insecurity or illness.
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Wasting Prevalence by Municipality**
+
+*This map will be populated from nutrition pipeline outputs once results are uploaded.*
+:::
+:::
+
+- **National rate**: 2.6%
+- More spatially diffuse than stunting
+- Lower variation across departments
+
+---
+
+## Underweight (Weight-for-Age < -2 SD)
+
+Composite indicator capturing both chronic and acute malnutrition.
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Underweight Prevalence by Municipality**
+
+*This map will be populated from nutrition pipeline outputs once results are uploaded.*
+:::
+:::
+
+- **National rate**: 2.7%
+- Pattern closer to stunting than wasting
+
+---
+
+## Poverty-Nutrition Overlap
+
+Municipalities with high poverty do not always have high malnutrition, and vice versa. Understanding where these overlap — and where they diverge — is critical for targeting interventions.
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Bivariate poverty-stunting classification**
+
+*This map will be added once both poverty and nutrition final estimates are available.*
+:::
+:::
+
+---
+
+## Department Summary
+
+| Department | Stunting (%) | Wasting (%) | Underweight (%) |
+|------------|-------------|-------------|-----------------|
+| Chuquisaca | 10.8 | 2.4 | 2.9 |
+| La Paz | 11.2 | 2.8 | 3.1 |
+| Cochabamba | 9.1 | 2.5 | 2.6 |
+| Oruro | 13.1 | 3.0 | 3.4 |
+| Potos&iacute; | 17.4 | 3.2 | 3.8 |
+| Tarija | 7.3 | 2.1 | 2.2 |
+| Santa Cruz | 5.9 | 2.0 | 1.9 |
+| Beni | 8.5 | 2.6 | 2.5 |
+| Pando | 6.2 | 2.3 | 2.1 |
+
+*Note: Department-level values from ENSDA 2023. Municipal estimates from SAE pipeline (pending).*

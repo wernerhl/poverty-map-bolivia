@@ -1,0 +1,95 @@
+---
+title: "Data & Downloads"
+subtitle: "Estimates, Shapefiles, and Replication Materials"
+---
+
+## Municipal Estimates
+
+::: {.download-card}
+::: {.dl-info}
+#### Poverty Estimates (CSV)
+Municipal-level poverty headcount, extreme poverty, poverty gap, and severity for 339 municipalities. Includes BYM2 credible intervals and precision classification.
+:::
+[Download]{.btn-download}
+:::
+
+::: {.download-card}
+::: {.dl-info}
+#### Nutrition Estimates (CSV)
+Municipal-level stunting, wasting, and underweight prevalence for children 0-4. Includes confidence intervals and coefficient of variation.
+:::
+[Download]{.btn-download}
+:::
+
+::: {.download-card}
+::: {.dl-info}
+#### Shapefile with Estimates
+GeoPackage with municipal boundaries (GADM 4.1) joined with all poverty and nutrition estimates. Ready for GIS.
+:::
+[Download]{.btn-download}
+:::
+
+---
+
+## Methodology & Code
+
+::: {.download-card}
+::: {.dl-info}
+#### Replication Code (R)
+Full pipeline: data harmonization, DRF, BYM2, OT calibration, uncertainty quantification, maps, and validation. 11 scripts.
+:::
+[GitHub](https://github.com/wernerhl/poverty-map-bolivia){.btn-download}
+:::
+
+::: {.download-card}
+::: {.dl-info}
+#### Working Paper (PDF)
+Full methodology paper with results, validation, and robustness checks.
+:::
+[Download]{.btn-download}
+:::
+
+---
+
+## Variable Dictionary
+
+### Poverty Estimates File
+
+| Variable | Description |
+|----------|-------------|
+| `idmun` | Municipality code (5-digit: dept*10000 + prov*100 + mun) |
+| `mun_name` | Municipality name |
+| `dept_name` | Department name |
+| `theta_drf` | DRF poverty headcount estimate |
+| `theta_bym2` | BYM2-smoothed poverty headcount |
+| `theta_final` | Final raked estimate |
+| `theta_ext` | Extreme poverty headcount |
+| `fgt1` | Poverty gap (FGT1) |
+| `fgt2` | Poverty severity (FGT2) |
+| `ci90_lo`, `ci90_hi` | 90% credible interval |
+| `cv_theta` | Coefficient of variation |
+| `precision` | Precision class: High/Medium/Moderate/Low |
+| `n_hh` | Number of census households |
+| `population` | Estimated population |
+
+### Nutrition Estimates File
+
+| Variable | Description |
+|----------|-------------|
+| `idmun` | Municipality code |
+| `stunting` | Prevalence of stunting (HAZ < -2) |
+| `wasting` | Prevalence of wasting (WHZ < -2) |
+| `underweight` | Prevalence of underweight (WAZ < -2) |
+| `stunting_ci90_lo/hi` | 90% credible interval for stunting |
+| `cv_stunting` | Coefficient of variation |
+| `n_children` | Number of census children 0-4 |
+
+---
+
+## Terms of Use
+
+These estimates are provided for research and policy analysis purposes. When using these data, please cite:
+
+> Hernani-Limarino, W.L. (2025). *Small Area Estimation of Poverty and Nutrition in Bolivia Using Distributional Random Forests, Bayesian Spatial Smoothing, and Optimal Transport*. Working Paper.
+
+The underlying microdata (EH 2024, CPV 2024, ENSDA 2023) are property of the Instituto Nacional de Estad&iacute;stica (INE) of Bolivia.

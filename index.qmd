@@ -1,0 +1,81 @@
+---
+title: "Small Area Estimation of Poverty and Nutrition in Bolivia"
+pagetitle: "Poverty & Nutrition in Bolivia"
+toc: false
+---
+
+::: {.hero-banner}
+# Poverty & Nutrition in Bolivia
+::: {.subtitle}
+Small Area Estimation at the Municipal Level — 2024
+:::
+::: {.lead}
+High-resolution poverty and malnutrition maps for all 339 municipalities of Bolivia,
+combining household survey data with census information through a three-layer
+statistical framework: Distributional Random Forests, Bayesian spatial smoothing, and Optimal Transport calibration.
+:::
+:::
+
+## Key Findings
+
+::: {.stats-grid}
+::: {.stat-card}
+[37.8%]{.stat-value}
+[National Poverty Rate]{.stat-label}
+:::
+::: {.stat-card}
+[11.9%]{.stat-value}
+[Extreme Poverty]{.stat-label}
+:::
+::: {.stat-card}
+[339]{.stat-value}
+[Municipalities Mapped]{.stat-label}
+:::
+::: {.stat-card}
+[9.7%]{.stat-value}
+[Child Stunting Rate]{.stat-label}
+:::
+:::
+
+## Methodology at a Glance
+
+::: {.pipeline-flow}
+::: {.pipeline-box}
+Survey Data<br/>(EH 2024)
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 1<br/>DRF
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 2<br/>BYM2
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Layer 3<br/>OT Calibration
+:::
+[&rarr;]{.pipeline-arrow}
+::: {.pipeline-box}
+Municipal<br/>Estimates
+:::
+:::
+
+Our three-layer approach combines the flexibility of machine learning (Distributional Random Forests) with the spatial coherence of Bayesian models (BYM2) and the distributional fidelity of Optimal Transport — producing estimates that are both locally precise and nationally consistent.
+
+::: {.callout-highlight}
+**Data sources**: Bolivia Household Survey (EH 2024, 12,718 households) and Census of Population and Housing (CPV 2024, ~3.5 million households). Nutrition estimates use the National Food and Nutrition Survey (ENSDA 2023, 19,059 children).
+:::
+
+## Explore the Results
+
+| Section | Description |
+|---------|-------------|
+| [Methodology](methodology.qmd) | Detailed description of the DRF + BYM2 + OT pipeline |
+| [Poverty Maps](poverty.qmd) | Interactive maps of poverty headcount, gap, and severity |
+| [Nutrition Maps](nutrition.qmd) | Stunting, wasting, and underweight at the municipal level |
+| [Data & Downloads](data.qmd) | Downloadable estimates, shapefiles, and replication code |
+
+## Citation
+
+> Hernani-Limarino, W.L. (2025). *Small Area Estimation of Poverty and Nutrition in Bolivia Using Distributional Random Forests, Bayesian Spatial Smoothing, and Optimal Transport*. Working Paper.

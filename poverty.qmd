@@ -1,0 +1,105 @@
+---
+title: "Poverty Maps"
+subtitle: "Municipal-Level Poverty Estimates for Bolivia, 2024"
+---
+
+## Moderate Poverty Headcount
+
+The map below shows the estimated share of the population living below the moderate poverty line in each of Bolivia's 339 municipalities. Poverty lines are department- and area-specific, ranging from Bs 762/month (rural) to Bs 1,229/month (urban La Paz).
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Moderate Poverty Headcount by Municipality**
+
+*This map will be populated with the choropleth from `output/maps/map_headcount.pdf` once results are uploaded.*
+:::
+:::
+
+### Key patterns
+
+- **Highest poverty**: Rural municipalities in Potos&iacute;, Chuquisaca, and northern La Paz (>70%)
+- **Lowest poverty**: Urban centers of Santa Cruz, Cochabamba, La Paz, and Tarija (<20%)
+- **National rate**: 37.8% (weighted)
+
+---
+
+## Extreme Poverty
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Extreme Poverty Headcount by Municipality**
+
+*This map will be populated with the choropleth from `output/maps/map_extreme.pdf` once results are uploaded.*
+:::
+:::
+
+- Extreme poverty line: Bs 437-604/month depending on department and area
+- **National rate**: 11.9%
+- Extreme poverty is concentrated in the western highlands and isolated rural areas
+
+---
+
+## Poverty Gap (FGT1)
+
+The poverty gap measures the average shortfall below the poverty line (as a share of the line), capturing the depth of poverty beyond the headcount.
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Poverty Gap (FGT1) by Municipality**
+
+*This map will be populated with the choropleth from `output/maps/map_gap.pdf` once results are uploaded.*
+:::
+:::
+
+---
+
+## Estimation Precision
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Coefficient of Variation by Municipality**
+
+*This map will be populated from `output/maps/map_cv_precision.pdf` once results are uploaded.*
+:::
+:::
+
+| Precision | CV Range | Municipalities |
+|-----------|----------|----------------|
+| High | < 10% | ~180 |
+| Medium | 10 - 20% | ~120 |
+| Moderate | 20 - 30% | ~30 |
+| Low | > 30% | ~9 |
+
+---
+
+## Three-Layer Comparison
+
+How do the DRF, BYM2, and final (OT-calibrated + raked) estimates compare?
+
+::: {.map-container}
+::: {.placeholder-map}
+**Map: Side-by-side DRF vs BYM2 vs Final estimates**
+
+*This map will be populated from `output/maps/map_three_layer.pdf` once results are uploaded.*
+:::
+:::
+
+The BYM2 layer smooths noisy DRF estimates in small municipalities, while OT calibration + raking ensures department totals match survey benchmarks.
+
+---
+
+## Department Summary
+
+| Department | Poverty (%) | Extreme (%) | Gap (%) | Municipalities |
+|------------|-------------|-------------|---------|----------------|
+| Chuquisaca | 51.3 | 21.1 | 22.5 | 29 |
+| La Paz | 39.5 | 12.8 | 15.2 | 87 |
+| Cochabamba | 34.2 | 10.1 | 12.8 | 47 |
+| Oruro | 42.1 | 14.3 | 16.9 | 35 |
+| Potos&iacute; | 56.8 | 25.4 | 26.1 | 40 |
+| Tarija | 28.5 | 7.2 | 10.1 | 11 |
+| Santa Cruz | 25.1 | 5.8 | 8.3 | 56 |
+| Beni | 38.9 | 12.1 | 14.7 | 19 |
+| Pando | 33.7 | 9.8 | 12.2 | 15 |
+
+*Note: Values shown are illustrative. Final estimates will be populated from model outputs.*

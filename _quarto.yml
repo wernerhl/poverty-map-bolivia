@@ -1,0 +1,47 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Poverty & Nutrition in Bolivia"
+  subtitle: "Small Area Estimation — 2024"
+  site-url: https://wernerhl.github.io/poverty-map-bolivia/
+  repo-url: https://github.com/wernerhl/poverty-map-bolivia
+  navbar:
+    background: "#1a1a2e"
+    foreground: "#ffffff"
+    logo: images/logo.svg
+    left:
+      - href: index.qmd
+        text: Home
+      - href: methodology.qmd
+        text: Methodology
+      - href: poverty.qmd
+        text: Poverty Maps
+      - href: nutrition.qmd
+        text: Nutrition Maps
+      - href: data.qmd
+        text: Data & Downloads
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/wernerhl/poverty-map-bolivia
+  page-footer:
+    center: |
+      Werner L. Hernani-Limarino | 2024-2025
+    background: "#1a1a2e"
+
+  page-navigation: true
+
+format:
+  html:
+    theme:
+      light: [cosmo, custom.scss]
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    smooth-scroll: true
+    link-external-newwindow: true

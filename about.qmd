@@ -1,0 +1,35 @@
+---
+title: "About"
+subtitle: "Project Team and Contact"
+---
+
+## Principal Investigator
+
+**Werner L. Hernani-Limarino**
+
+Email: [wernerhl@gmail.com](mailto:wernerhl@gmail.com)
+
+---
+
+## About This Project
+
+This project produces high-resolution poverty and malnutrition maps for Bolivia at the municipal level, using a novel three-layer small area estimation methodology that combines:
+
+1. **Distributional Random Forests** for flexible, nonparametric welfare prediction
+2. **BYM2 spatial models** for borrowing strength across neighboring municipalities
+3. **Optimal Transport** for calibrating predicted distributions to match survey benchmarks
+
+The estimates cover all 339 municipalities of Bolivia using data from the 2024 Household Survey (EH), the 2024 Census of Population and Housing (CPV), and the 2023 National Food and Nutrition Survey (ENSDA).
+
+---
+
+## Acknowledgments
+
+- Instituto Nacional de Estad&iacute;stica (INE) of Bolivia for the microdata
+- The methodology builds on the Distributional Random Forests framework of Cevid et al. (2022) and the BYM2 spatial model of Riebler et al. (2016)
+
+---
+
+## Source Code
+
+All code is written in R and available on [GitHub](https://github.com/wernerhl/poverty-map-bolivia).
